@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LaporanPenjualanPerVendor" pageWidth="5000" pageHeight="2000" orientation="Landscape" columnWidth="4960" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e8b21271-7a31-4365-b7c5-eac1d4dc6d9a">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="KAHA Dev"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Crosstab_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab 1_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dataPivot" uuid="8e1f6d3e-6622-47a8-95dc-2d0732621298">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT
+    DATE_FORMAT(a.trx_date,'%Y%m%d') tgl_string,
+    CONCAT(
+        DATE_FORMAT(a.trx_date,'%d'),' ',
+        CASE DAYOFWEEK(a.trx_date)
+            WHEN 1 THEN 'Minggu'
+            WHEN 2 THEN 'Senin'
+            WHEN 3 THEN 'Selasa'
+            WHEN 4 THEN 'Rabu'
+            WHEN 5 THEN 'Kamis'
+            WHEN 6 THEN 'Jumat'
+            WHEN 7 THEN 'Sabtu'
+          END) tgl_name,
+    1 jml,
+    'Total Penjualan' row_name,
+    c.display_name
+FROM t_payment a
+LEFT JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+LEFT JOIN m_switcher c ON c.switcher_code = b.switcher_code
+WHERE a.status in (3,4,5,6,7,8,9,11,20)
+and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+UNION ALL 
+SELECT
+    DATE_FORMAT(a.trx_date,'%Y%m%d') tgl_string,
+    CONCAT(
+        DATE_FORMAT(a.trx_date,'%d'), ' ',
+        CASE DAYOFWEEK(a.trx_date)
+            WHEN 1 THEN 'Minggu'
+            WHEN 2 THEN 'Senin'
+            WHEN 3 THEN 'Selasa'
+            WHEN 4 THEN 'Rabu'
+            WHEN 5 THEN 'Kamis'
+            WHEN 6 THEN 'Jumat'
+            WHEN 7 THEN 'Sabtu'
+          END) tgl_name,
+    CASE 
+            WHEN (CAST(volume AS signed) > CAST(gross_weight AS signed))
+            THEN volume
+            ELSE gross_weight
+    END jml,
+    'Total Berat (KG)' row_name,
+    c.display_name
+FROM t_payment a
+LEFT JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+LEFT JOIN m_switcher c ON c.switcher_code = b.switcher_code
+WHERE a.status in (3,4,5,6,7,8,9,11,20)
+and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+UNION ALL
+SELECT
+    DATE_FORMAT(a.trx_date,'%Y%m%d') tgl_string,
+    CONCAT(
+        DATE_FORMAT(a.trx_date,'%d'),' ',
+        CASE DAYOFWEEK(a.trx_date)
+            WHEN 1 THEN 'Minggu'
+            WHEN 2 THEN 'Senin'
+            WHEN 3 THEN 'Selasa'
+            WHEN 4 THEN 'Rabu'
+            WHEN 5 THEN 'Kamis'
+            WHEN 6 THEN 'Jumat'
+            WHEN 7 THEN 'Sabtu'
+          END) tgl_name,
+    a.amount jml,
+    'Total Revenue' row_name,
+    c.display_name
+FROM t_payment a
+LEFT JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+LEFT JOIN m_switcher c ON c.switcher_code = b.switcher_code
+WHERE a.status in (3,4,5,6,7,8,9,11,20)
+and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+UNION ALL 
+select 
+    DATE_FORMAT(a.selected_date,'%Y%m%d') tgl_string,
+    CONCAT(
+        DATE_FORMAT(a.selected_date,'%d'),' ',
+        CASE DAYOFWEEK(a.selected_date)
+            WHEN 1 THEN 'Minggu'
+            WHEN 2 THEN 'Senin'
+            WHEN 3 THEN 'Selasa'
+            WHEN 4 THEN 'Rabu'
+            WHEN 5 THEN 'Kamis'
+            WHEN 6 THEN 'Jumat'
+            WHEN 7 THEN 'Sabtu'
+          END) tgl_name,
+    '0' jml,
+    c.row_name,
+    b.display_name
+from 
+(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from
+ (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+ (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+ (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+ (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+ (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) a
+CROSS JOIN (
+    SELECT DISTINCT
+        a.display_name
+    FROM m_switcher a
+    INNER JOIN m_product_switcher b ON b.switcher_code = a.switcher_code
+) b
+CROSS JOIN (
+    SELECT 'Total Penjualan' row_name
+    UNION ALL
+    SELECT 'Total Berat (KG)'
+    UNION ALL
+    SELECT 'Total Revenue'
+) c
+where DATE_FORMAT(selected_date,'%Y%m') = $P{periode}
+;]]>
+		</queryString>
+		<field name="tgl_string" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_string"/>
+		</field>
+		<field name="tgl_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_name"/>
+		</field>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+		<field name="row_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="row_name"/>
+		</field>
+		<field name="display_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="display_name"/>
+		</field>
+	</subDataset>
+	<subDataset name="dataTotalTrx" uuid="95d1c10b-5183-4915-ac1d-3edbdf4418ab">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT 
+    a.tgl_name,
+    a.kurir,
+    CASE
+        WHEN b.jml > 0
+        THEN b.jml
+        ELSE a.jml
+    END jml
+FROM (
+    select 
+        CONCAT(
+            DATE_FORMAT(a.selected_date,'%d'),' ',
+            CASE DAYOFWEEK(a.selected_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        b.display_name kurir,
+        0 jml
+    from 
+    (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) a
+    CROSS JOIN (
+        SELECT DISTINCT
+            a.display_name
+        FROM m_switcher a
+        INNER JOIN m_product_switcher b ON b.switcher_code = a.switcher_code
+    ) b
+    where DATE_FORMAT(selected_date,'%Y%m') = $P{periode}
+) a
+LEFT JOIN (
+    SELECT
+        *,
+        COUNT(*) jml
+    FROM
+        (
+        SELECT
+           CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'),' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+            c.display_name kurir
+        FROM
+            t_payment a
+        INNER JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+        INNER JOIN m_switcher c ON c.switcher_code = b.switcher_code
+        WHERE
+            a.status in (3,4,5,6,7,8,9,11,20)
+         AND DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+     ) a 
+    GROUP BY
+        a.tgl_name,
+        a.kurir
+) b ON b.tgl_name = a.tgl_name AND b.kurir = a.kurir
+;]]>
+		</queryString>
+		<field name="tgl_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_name"/>
+		</field>
+		<field name="kurir" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="kurir"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="m_switcher"/>
+		</field>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+	</subDataset>
+	<subDataset name="dataTotalBerat" uuid="53f190c4-d047-4b56-ab1c-8d8dc20a5084">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT
+    a.tgl_name,
+    a.kurir,
+    CASE
+        WHEN b.jml > 0
+        THEN b.jml
+        ELSE a.jml
+    END jml
+FROM (
+    select 
+        CONCAT(
+            DATE_FORMAT(a.selected_date,'%d'),' ',
+            CASE DAYOFWEEK(a.selected_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        b.display_name kurir,
+        0 jml
+    from 
+    (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) a
+    CROSS JOIN (
+        SELECT DISTINCT
+            a.display_name
+        FROM m_switcher a
+        INNER JOIN m_product_switcher b ON b.switcher_code = a.switcher_code
+    ) b
+    where DATE_FORMAT(selected_date,'%Y%m') = $P{periode}
+) a
+LEFT JOIN (
+    SELECT
+        tgl_name,
+        kurir,
+        sum(jml) jml
+    FROM
+        (
+        SELECT
+           CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'),' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+            c.display_name kurir,
+            CASE 
+                WHEN (CAST(volume AS signed) > CAST(gross_weight AS signed))
+	        	THEN volume
+	            ELSE gross_weight
+            END jml
+        FROM
+            t_payment a
+        INNER JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+        INNER JOIN m_switcher c ON c.switcher_code = b.switcher_code
+        WHERE
+            a.status in (3,4,5,6,7,8,9,11,20)
+            AND DATE_FORMAT(a.trx_date,'%Y%m') =  $P{periode} 
+     ) a
+    GROUP BY
+        tgl_name,
+        kurir
+) b ON b.tgl_name = a.tgl_name AND b.kurir = a.kurir
+;]]>
+		</queryString>
+		<field name="tgl_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_name"/>
+		</field>
+		<field name="kurir" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="kurir"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="m_switcher"/>
+		</field>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+	</subDataset>
+	<subDataset name="dataPivot2" uuid="c72f83ce-c50d-4565-8f7a-9c2a2117b2d3">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT
+    1 jml,
+    'Total Penjualan' row_name,
+    c.display_name kurir
+FROM t_payment a
+LEFT JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+LEFT JOIN m_switcher c ON c.switcher_code = b.switcher_code
+WHERE a.status in (3,4,5,6,7,8,9,11,20)
+and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+UNION ALL 
+SELECT
+    CASE 
+            WHEN (CAST(volume AS signed) > CAST(gross_weight AS signed))
+            THEN volume
+            ELSE gross_weight
+    END jml,
+    'Total Berat (KG)' row_name,
+    c.display_name kurir
+FROM t_payment a
+LEFT JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+LEFT JOIN m_switcher c ON c.switcher_code = b.switcher_code
+WHERE a.status in (3,4,5,6,7,8,9,11,20)
+and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+UNION ALL
+SELECT
+    a.amount jml,
+    'Total Revenue' row_name,
+    c.display_name kurir
+FROM t_payment a
+LEFT JOIN m_product_switcher b ON b.product_sw_code = a.product_sw_code
+LEFT JOIN m_switcher c ON c.switcher_code = b.switcher_code
+WHERE a.status in (3,4,5,6,7,8,9,11,20)
+and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode} 
+UNION ALL
+SELECT DISTINCT
+    '0' jml,
+    row_name,
+    display_name kurir
+FROM (
+    SELECT DISTINCT
+        a.display_name
+    FROM m_switcher a
+    INNER JOIN m_product_switcher b ON b.switcher_code = a.switcher_code
+    WHERE b.product_sw_code NOT IN (
+        SELECT DISTINCT
+        product_sw_code
+        FROM t_payment
+        WHERE status in (3,4,5,6,7,8,9,11,20)
+        AND DATE_FORMAT(trx_date,'%Y%m') = $P{periode}
+    )
+) a
+CROSS JOIN (
+    SELECT 'Total Penjualan' row_name
+    UNION ALL 
+    SELECT 'Total Berat (KG)' row_name
+    UNION ALL 
+    SELECT 'Total Revenue' row_name
+) b 
+;]]>
+		</queryString>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+		<field name="row_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="row_name"/>
+		</field>
+		<field name="kurir" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="kurir"/>
+		</field>
+	</subDataset>
+	<parameter name="dateStart" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select concat(CASE SUBSTRING( $P{dateStart} ,5,2)
+    WHEN 1 THEN 'Januari' 
+    WHEN 2 THEN 'Februari' 
+    WHEN 3 THEN 'Maret' 
+    WHEN 4 THEN 'April' 
+    WHEN 5 THEN 'Mei' 
+    WHEN 6 THEN 'Juni' 
+    WHEN 7 THEN 'Juli' 
+    WHEN 8 THEN 'Agustus' 
+    WHEN 9 THEN 'September'
+    WHEN 10 THEN 'Oktober' 
+    WHEN 11 THEN 'November' 
+    WHEN 12 THEN 'Desember' 
+  END,' ', year(NOW()))  as periode_name;]]>
+	</queryString>
+	<field name="periode_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="periode_name"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="63">
+			<staticText>
+				<reportElement positionType="Float" x="1445" y="3" width="270" height="30" uuid="f4a176fe-9cda-454f-b008-236bc4b629ff"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LAPORAN PENJUALAN GLOBAL
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1445" y="33" width="270" height="20" uuid="2538995d-4075-453d-b2e0-28b9c4989662"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Bulan "+$F{periode_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="51">
+			<crosstab>
+				<reportElement x="0" y="0" width="5000" height="50" uuid="76964e36-71a2-42dd-b5f4-24c5fbaa138a">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
+					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
+					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
+				</reportElement>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="dataPivot" uuid="e7b80b54-5e95-46eb-ba45-0f1c353fe694">
+							<datasetParameter name="periode">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<rowGroup name="display_name" width="40" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{display_name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="40" height="15" uuid="44b4dbfd-b961-4adc-bed4-59e602e77e80"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{display_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="40" height="15" forecolor="#FFFFFF" uuid="2a8690b3-cf5b-4552-ad38-fc558692e1ff"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="tgl_name" height="15" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{tgl_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="50" height="15" uuid="d9a19b68-6f32-42b9-8b75-56d23fd3fefb"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{tgl_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT"/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<columnGroup name="row_name" height="20" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{row_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="50" height="20" uuid="400d82ce-90fb-4a87-922c-6d30cb8a1229"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{row_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CG"/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="jml_MEASURE" class="java.lang.Integer" calculation="Sum">
+					<measureExpression><![CDATA[$F{jml}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="15">
+					<cellContents mode="Opaque" style="Crosstab_CD">
+						<textField isStretchWithOverflow="true">
+							<reportElement x="0" y="0" width="50" height="15" uuid="e8d7ab30-63b9-4eb0-a925-ad59f8dcd4c0"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="15" columnTotalGroup="tgl_name">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
+				<crosstabCell width="0" height="15" columnTotalGroup="row_name">
+					<cellContents mode="Opaque" style="Crosstab_CG"/>
+				</crosstabCell>
+				<crosstabCell width="50" height="15" rowTotalGroup="display_name">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField isStretchWithOverflow="true">
+							<reportElement x="0" y="0" width="50" height="15" forecolor="#FFFFFF" uuid="2f41f931-9d36-4916-ba37-a56c169f8f59"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="15" rowTotalGroup="display_name" columnTotalGroup="tgl_name">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
+				<crosstabCell width="0" height="15" rowTotalGroup="display_name" columnTotalGroup="row_name">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+		<band height="70">
+			<crosstab>
+				<reportElement x="0" y="20" width="5000" height="50" uuid="6da0a100-6a0a-4aae-894a-075f99672ff3">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab 1_CH"/>
+					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab 1_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab 1_CT"/>
+					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab 1_CD"/>
+				</reportElement>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="dataPivot2" uuid="1819388f-8e51-4741-858c-398af9b91f36">
+							<datasetParameter name="periode">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<rowGroup name="kurir" width="50" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{kurir}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 1_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="50" height="15" uuid="80818476-ce9f-4a7a-a076-546563a3bc3f"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{kurir}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab 1_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="50" height="15" forecolor="#FFFFFF" uuid="4d69fbb3-59cc-4d87-a5b4-8973da714070"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="row_name" height="15" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{row_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab 1_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="50" height="15" uuid="eea3e5a7-7d72-4ea6-a07f-9168c6ed68ce"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{row_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab 1_CT"/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="jml_MEASURE" class="java.lang.Integer" calculation="Sum">
+					<measureExpression><![CDATA[$F{jml}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="15">
+					<cellContents mode="Opaque" style="Crosstab 1_CD">
+						<textField isStretchWithOverflow="true">
+							<reportElement x="0" y="0" width="50" height="15" uuid="fbf688dd-9ca0-422c-9596-b83f00932927"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="15" columnTotalGroup="row_name">
+					<cellContents mode="Opaque" style="Crosstab 1_CT"/>
+				</crosstabCell>
+				<crosstabCell width="50" height="15" rowTotalGroup="kurir">
+					<cellContents mode="Opaque" style="Crosstab 1_CT">
+						<textField isStretchWithOverflow="true">
+							<reportElement x="0" y="0" width="50" height="15" forecolor="#FFFFFF" uuid="045ec13f-1556-4492-9a31-5349433e33f9"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="15" rowTotalGroup="kurir" columnTotalGroup="row_name">
+					<cellContents mode="Opaque" style="Crosstab 1_CT"/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+		<band height="310">
+			<staticText>
+				<reportElement x="1485" y="60" width="190" height="30" uuid="a9da4939-3e85-4db6-9259-d0129148752f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Transaksi]]></text>
+			</staticText>
+		</band>
+		<band height="565">
+			<lineChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="190" width="3150" height="300" uuid="64f57b78-8de1-4bbc-a180-93449dfe8775"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="dataTotalBerat" uuid="11bc3fb3-c538-47d2-8948-591b87c075b5">
+							<datasetParameter name="periode">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{kurir}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{tgl_name}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{jml}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<staticText>
+				<reportElement x="1488" y="150" width="185" height="30" uuid="bd213602-fd21-4b3d-9fdb-c18f7199d580"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Berat (KG)]]></text>
+			</staticText>
+			<lineChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="-190" width="3150" height="300" uuid="7dd9d072-c2d4-46de-9f8b-d4bd29d26105"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="dataTotalTrx" uuid="2a1d25c1-296b-419e-9974-8219dfb5727d">
+							<datasetParameter name="periode">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{kurir}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{tgl_name}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{jml}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+		</band>
+	</detail>
+</jasperReport>

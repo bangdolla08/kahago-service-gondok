@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.10.0.final using JasperReports Library version 6.10.0-unknown  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LaporanPenjualanGlobal" pageWidth="3000" pageHeight="1500" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="2960" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="87e60b99-728a-45f3-aec4-7424d69f504f">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="KAHA Dev"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="Crosstab_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dataPivot" uuid="cb3ea681-4ee8-408f-b3d9-d6e238800c6e">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode_pivot" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT 
+    a.tgl_string,
+    a.tgl_name,
+    CASE
+        WHEN b.jml > 0
+        THEN b.jml
+        ELSE a.jml
+    END jml,
+    a.row_name
+FROM (
+    select 
+        DATE_FORMAT(a.selected_date,'%Y%m%d') tgl_string,
+        CONCAT(
+            DATE_FORMAT(a.selected_date,'%d'),' ',
+            CASE DAYOFWEEK(a.selected_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        0 jml,
+        row_name
+    from 
+    (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) a
+    CROSS JOIN (
+       SELECT 'Total Penjualan' row_name
+       UNION ALL
+       SELECT 'Total Berat (KG)' row_name
+       UNION ALL
+       SELECT 'Total Revenue' row_name
+    ) b
+    where DATE_FORMAT(selected_date,'%Y%m') = $P{periode_pivot}
+) a
+LEFT JOIN(
+    SELECT
+        DATE_FORMAT(a.trx_date,'%Y%m%d') tgl_string,
+        CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'),' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        1 jml,
+        'Total Penjualan' row_name
+    FROM t_payment a
+    WHERE status in (3,4,5,6,7,8,9,11,20)
+    and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode_pivot}  
+    UNION ALL 
+    SELECT
+        DATE_FORMAT(a.trx_date,'%Y%m%d') tgl_string,
+        CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'), ' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        CASE 
+            WHEN (CAST(volume AS signed) > CAST(gross_weight AS signed))
+            THEN volume
+            ELSE gross_weight
+        END jml,
+        'Total Berat (KG)' row_name
+    FROM t_payment a
+    WHERE status in (3,4,5,6,7,8,9,11,20)
+    and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode_pivot}  
+    UNION ALL
+    SELECT
+        DATE_FORMAT(a.trx_date,'%Y%m%d') tgl_string,
+        CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'),' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        a.amount jml,
+        'Total Revenue' row_name
+    FROM t_payment a
+    WHERE status in (3,4,5,6,7,8,9,11,20)
+    and DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode_pivot}  
+) b ON b.tgl_string = a.tgl_string AND b.tgl_name = a.tgl_name
+AND b.row_name = a.row_name
+;]]>
+		</queryString>
+		<field name="tgl_string" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_string"/>
+		</field>
+		<field name="tgl_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_name"/>
+		</field>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+		<field name="row_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="row_name"/>
+		</field>
+	</subDataset>
+	<subDataset name="dataTotalTrx" uuid="b9eef95c-044b-4c18-acb5-b361fa9de010">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT 
+    a.tgl_name,
+    a.row_name,
+    CASE
+        WHEN b.jml > 0
+        THEN b.jml
+        ELSE a.jml
+    END jml
+FROM (
+    select 
+        CONCAT(
+            DATE_FORMAT(a.selected_date,'%d'),' ',
+            CASE DAYOFWEEK(a.selected_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        0 jml,
+        'Total Transaksi' row_name
+    from 
+    (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) a
+    where DATE_FORMAT(selected_date,'%Y%m') = $P{periode}
+) a
+LEFT JOIN (
+    SELECT
+        *,
+        COUNT(*) jml
+    FROM
+        (
+        SELECT
+            CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'),' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+            'Total Transaksi' row_name
+        FROM
+            t_payment a
+        WHERE
+            status in (3,4,5,6,7,8,9,11,20)
+            AND DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+     ) a
+    GROUP BY
+        tgl_name,
+        row_name
+) b ON b.tgl_name = a.tgl_name AND b.row_name = a.row_name]]>
+		</queryString>
+		<field name="tgl_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_name"/>
+		</field>
+		<field name="row_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="row_name"/>
+		</field>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+	</subDataset>
+	<subDataset name="dataTotalBerat" uuid="f18a184a-5bd7-4a4e-82c2-8fbaf1b6a1b4">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="mysql - kahareport"/>
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<parameter name="periode" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT 
+    a.tgl_name,
+    a.row_name,
+    CASE
+        WHEN b.jml > 0
+        THEN b.jml
+        ELSE a.jml
+    END jml
+FROM (
+    select 
+        CONCAT(
+            DATE_FORMAT(a.selected_date,'%d'),' ',
+            CASE DAYOFWEEK(a.selected_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+        0 jml,
+        'Total Berat (KG)' row_name
+    from 
+    (select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+     (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) a
+    where DATE_FORMAT(selected_date,'%Y%m') = $P{periode}
+) a
+LEFT JOIN (
+    SELECT
+        tgl_name,
+        row_name,
+        sum(jml) jml
+    FROM
+        (
+        SELECT
+            CONCAT(
+            DATE_FORMAT(a.trx_date,'%d'),' ',
+            CASE DAYOFWEEK(a.trx_date)
+                WHEN 1 THEN 'Minggu'
+                WHEN 2 THEN 'Senin'
+                WHEN 3 THEN 'Selasa'
+                WHEN 4 THEN 'Rabu'
+                WHEN 5 THEN 'Kamis'
+                WHEN 6 THEN 'Jumat'
+                WHEN 7 THEN 'Sabtu'
+              END) tgl_name,
+            'Total Berat (KG)' row_name,
+            CASE 
+                WHEN (CAST(volume AS signed) > CAST(gross_weight AS signed))
+        	THEN volume
+            ELSE gross_weight
+            END jml
+        FROM
+            t_payment a
+        WHERE
+            status in (3,4,5,6,7,8,9,11,20)
+            AND DATE_FORMAT(a.trx_date,'%Y%m') = $P{periode}  
+     ) a
+    GROUP BY
+        tgl_name,
+        row_name
+) b ON b.tgl_name = a.tgl_name AND b.row_name = a.row_name]]>
+		</queryString>
+		<field name="tgl_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="tgl_name"/>
+		</field>
+		<field name="row_name" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.label" value="row_name"/>
+		</field>
+		<field name="jml" class="java.lang.Integer">
+			<property name="com.jaspersoft.studio.field.label" value="jml"/>
+		</field>
+	</subDataset>
+	<parameter name="dateStart" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select concat(CASE SUBSTRING( $P{dateStart} ,5,2)
+    WHEN 1 THEN 'Januari' 
+    WHEN 2 THEN 'Februari' 
+    WHEN 3 THEN 'Maret' 
+    WHEN 4 THEN 'April' 
+    WHEN 5 THEN 'Mei' 
+    WHEN 6 THEN 'Juni' 
+    WHEN 7 THEN 'Juli' 
+    WHEN 8 THEN 'Agustus' 
+    WHEN 9 THEN 'September'
+    WHEN 10 THEN 'Oktober' 
+    WHEN 11 THEN 'November' 
+    WHEN 12 THEN 'Desember' 
+  END,' ', year(NOW()))  as periode_name;]]>
+	</queryString>
+	<field name="periode_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="periode_name"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="50">
+			<staticText>
+				<reportElement positionType="Float" x="1345" y="0" width="270" height="30" uuid="01e1cb41-a32d-423b-bded-68f9fe2c8226"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LAPORAN PENJUALAN GLOBAL
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1345" y="30" width="270" height="20" uuid="5df6cd1b-ce1d-4b63-82c8-7fd0a201b140"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Bulan "+$F{periode_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="45">
+			<crosstab>
+				<reportElement x="0" y="0" width="2960" height="45" uuid="70effaa3-df13-4cc2-a888-739e9504a20b">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
+					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
+					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
+				</reportElement>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="dataPivot" uuid="5ab3df3b-0e7b-4c96-ba4c-75b57ef99912">
+							<datasetParameter name="periode_pivot">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<rowGroup name="row_name" width="50" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{row_name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="50" height="15" uuid="60d6bb1c-e656-4d0a-ba8f-ddca1f96b7a0"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{row_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT"/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="tgl_name" height="15" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{tgl_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="50" height="15" uuid="6cb20ff6-6888-4b57-9d75-0a2ebde8a9e6"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{tgl_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="30" height="15" forecolor="#FFFFFF" uuid="fc652e02-2818-43fb-a39d-4222aa8b4bf6"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total tgl_name]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="jml_MEASURE" class="java.lang.Integer" calculation="Sum">
+					<measureExpression><![CDATA[$F{jml}]]></measureExpression>
+				</measure>
+				<crosstabCell width="50" height="15">
+					<cellContents mode="Opaque" style="Crosstab_CD">
+						<textField isStretchWithOverflow="true">
+							<reportElement x="0" y="0" width="50" height="15" uuid="c70f6eec-9344-4d35-abf4-2265451ff131"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="30" height="15" columnTotalGroup="tgl_name">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField isStretchWithOverflow="true">
+							<reportElement x="0" y="0" width="30" height="15" forecolor="#FFFFFF" uuid="3aaab229-ab24-47ae-847f-2d2a211a0f89"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" height="0" rowTotalGroup="row_name">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
+				<crosstabCell width="30" height="0" rowTotalGroup="row_name" columnTotalGroup="tgl_name">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField>
+							<reportElement x="0" y="0" width="30" height="0" forecolor="#FFFFFF" uuid="b4f3c166-d0f7-4c9c-84fd-ed2ec196f510"/>
+							<textFieldExpression><![CDATA[$V{jml_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</detail>
+	<summary>
+		<band height="550" splitType="Stretch">
+			<lineChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="60" width="2960" height="200" uuid="438339e7-9649-4d2a-b8ab-de02d56eecbb"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="dataTotalTrx" uuid="8e5bc744-fb3e-45f6-8156-49736f20638a">
+							<datasetParameter name="periode">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{row_name}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{tgl_name}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{jml}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<lineChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="350" width="2960" height="200" uuid="28252e1a-3a0b-4c96-943c-7086e1143c83"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="dataTotalBerat" uuid="62099716-b0ad-4393-a12d-9fc9728c28c9">
+							<datasetParameter name="periode">
+								<datasetParameterExpression><![CDATA[$P{dateStart}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{row_name}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{tgl_name}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{jml}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+		</band>
+	</summary>
+</jasperReport>

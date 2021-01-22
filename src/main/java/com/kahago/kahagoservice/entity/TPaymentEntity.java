@@ -1,0 +1,137 @@
+package com.kahago.kahagoservice.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.List;
+
+@Builder
+@Entity
+@Table(name = "t_payment")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class TPaymentEntity implements Serializable {
+	
+    @Id
+    private String bookingCode;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private MUserEntity userId;
+    private String stt;
+    private String officeCode;
+    private LocalDate trxDate;
+    private String trxTime;
+    @ManyToOne()
+    @JoinColumn(name = "productSwCode")
+    private MProductSwitcherEntity productSwCode;
+    private String senderTelp;
+    private String receiverTelp;
+    private BigDecimal amount;
+    private BigDecimal priceGoods;
+    private String resi;
+    private String cacode;
+    private Timestamp trxServer;
+    private String rc;
+    private String reverseId;
+    private Timestamp reverseDate;
+    private BigDecimal adminTrx;
+    private BigDecimal feeAdmin;
+    private Integer minWeight;
+    private BigDecimal feeMitra;
+    private BigDecimal feeInternal;
+    private BigDecimal shippingSurcharge;
+    private BigDecimal insurance;
+    private BigDecimal extraCharge;
+    private Integer jumlahLembar;
+    private String datarekon;
+    private String tglrekon;
+    private String productDstCode;
+    private Integer status;
+    private String origin;
+    private String destination;
+    private Long grossWeight;
+    private Long volume;
+    private String comodity;
+    private String note;
+    private String goodsDesc;
+    private String senderName;
+    private String senderAddress;
+    private String senderEmail;
+    private String receiverName;
+    private String receiverAddress;
+    private String receiverEmail;
+    private BigDecimal priceKg;
+    @ManyToOne()
+    @JoinColumn(name="pickupAddrId")
+    private TPickupAddressEntity pickupAddrId;
+    @ManyToOne()
+    @JoinColumn(name="idPostalCode")
+    private MPostalCodeEntity idPostalCode;
+    private String serviceType;
+    private BigDecimal price;
+    private BigDecimal priceRepack;
+    private Double totalPackKg;
+    private BigDecimal totalHpp;
+    private BigDecimal profit;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="pickupTimeId")
+    private MPickupTimeEntity pickupTimeId;
+    private LocalDate pickupDate;
+    private String pickupTime;
+    private String pvFlag;
+    private String bankDepCode;
+    private String noTiket;
+    private String qrcode;
+    private LocalDate qrcodeDate;
+    private Integer goodsId;
+    private String kantongPos;
+    private BigDecimal htnbPos;
+    private Byte mitraFlag;
+    private String discountCode;
+    private BigDecimal discountValue;
+    private BigDecimal amountUniq;
+    private BigDecimal amountDiff;
+    private String resiPath;
+    private String paymentOption;
+    private String idPayment;
+    private String idTicket;
+    private BigDecimal insufficientFund;
+    private Byte isConfirmTransfer;
+    private Integer statusPay;
+    private Integer countPawoon;
+    @OneToMany(fetch=FetchType.EAGER,orphanRemoval = true,cascade = CascadeType.ALL)
+//    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+	@JoinColumn(name="booking_code", referencedColumnName="bookingCode")
+	private List<TBookEntity> tbooks;
+//    @OneToOne(cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.EAGER)
+//    @JoinColumn(name="booking_code", referencedColumnName="bookingCode")
+//    private TBookLeadTime tbookleadtime;
+    private String qrcodeExt;
+    @Transient
+    private String tenorPayment;
+    @Transient
+    private String typePayment;
+    @Transient
+    private String phoneNumber;
+    private String device;
+
+}
